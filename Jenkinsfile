@@ -2,14 +2,14 @@
 // TODO: look for all instances of [] and replace all instances of 
 //       the 'variables' with actual values 
 // variables:
-//      [GITREPO]
-//      [IMAGE_NAME]
-//      [PROJECTID]
-//      [CLUSTER_NAME] 
-//      [ZONE]
+//      https://github.com/tuantrinh-dlt/events-app-web-server.git
+//      web-server-image
+//      roidtc-april111
+//      cnd-k8s-cluster
+//      us-central1-c
 //      the following values can be found in the yaml:
-//      [DEPLOYMENT_NAME]
-//      [CONTAINER_NAME] (in the template/spec section of the deployment)
+//      demo-ui
+//      demo-ui (in the template/spec section of the deployment)
 
 pipeline {
     agent any 
@@ -29,7 +29,7 @@ pipeline {
             steps {
                 echo 'Retrieving source from github' 
                 git branch: 'main',
-                    url: '[GITREPO]'
+                    url: 'https://github.com/tuantrinh-dlt/events-app-web-server.git'
                 echo 'Did we get the source?' 
                 sh 'ls -a'
             }
@@ -59,16 +59,16 @@ pipeline {
             steps {
                 echo "build id = ${env.BUILD_ID}"
                 echo 'Tests passed on to build Docker container'
-                sh "gcloud builds submit -t gcr.io/[PROJECTID]/[IMAGE_NAME]:v2.${env.BUILD_ID} ."
+                sh "gcloud builds submit -t gcr.io/roidtc-april111/web-server-image:v2.${env.BUILD_ID} ."
             }
         }        
          stage('Stage 5') {
             steps {
                 echo 'Get cluster credentials'
-                sh 'gcloud container clusters get-credentials [CLUSTER_NAME] --zone [ZONE] --project [PROJECTID]'
+                sh 'gcloud container clusters get-credentials cnd-k8s-cluster--zone us-central1-c --project roidtc-april111'
                 echo 'Update the image'
-                echo "gcr.io/[PROJECTID]/[IMAGE_NAME]:2.${env.BUILD_ID}"
-                sh "kubectl set image deployment/[DEPLOYMENT_NAME] [CONTAINER_NAME]=gcr.io/[PROJECTID]/[IMAGE_NAME]:v2.${env.BUILD_ID} --record"
+                echo "gcr.io/roidtc-april111/web-server-image:2.${env.BUILD_ID}"
+                sh "kubectl set image deployment/demo-ui demo-ui=gcr.io/roidtc-april111/web-server-image:v2.${env.BUILD_ID} --record"
             }
         }
     }
