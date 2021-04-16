@@ -65,7 +65,7 @@ pipeline {
          stage('Stage 5') {
             steps {
                 echo 'Get cluster credentials'
-                sh 'gcloud container clusters get-credentials cnd-k8s-cluster--zone us-central1-c --project roidtc-april111'
+                sh 'gcloud container clusters get-credentials cnd-k8s-cluster --zone us-central1-c --project roidtc-april111'
                 echo 'Update the image'
                 echo "gcr.io/roidtc-april111/web-server-image:2.${env.BUILD_ID}"
                 sh "kubectl set image deployment/demo-ui demo-ui=gcr.io/roidtc-april111/web-server-image:v2.${env.BUILD_ID} --record"
